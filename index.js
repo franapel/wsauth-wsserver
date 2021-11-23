@@ -14,6 +14,8 @@ const jwt = require('jsonwebtoken')
 
 app.use(cors({ origin: ORIGIN }))
 
+console.log(ORIGIN)
+
 app.get('/', (req, res) => {
     res.send('<h1>hola<h1>');
 })
