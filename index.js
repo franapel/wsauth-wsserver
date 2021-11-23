@@ -1,6 +1,6 @@
+require('dotenv').config()
 const PORT = process.env.PORT || 80
-const ORIGIN = process.env.CLIENT_URL || 'http://localhost:3000'
-const AUTH_URL = process.env.AUTH_URL || 'http://localhost:5000'
+const ORIGIN = process.env.CLIENT_URL
 
 const express = require('express')
 const cors = require('cors')
@@ -10,7 +10,7 @@ const server = http.createServer(app)
 const { Server } = require("socket.io")
 const io = new Server(server, { cors: { origin: ORIGIN } })
 const axios = require('axios').default
-
+const jwt = require('jsonwebtoken')
 
 app.use(cors({ origin: ORIGIN }))
 
@@ -20,13 +20,27 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected')
-    socket.on('authenticate', (token) => {
-        axios.post(AUTH_URL+'/auth', token)
-        .then(res => console.log(res.data))
-        .catch(err => {
-            console.log('Authentication error')
-            socket.disconnect()
+    socket.on('authenticate', (creds) => {
+        const token = creds.token.split(' ')[1]
+        jwt.verify(token, 'secreto', (err, decoded) => {
+            if (err) {
+                console.log('Socket Authentication error')
+                socket.disconnect()
+            } else {
+                if (decoded.sub !== creds.user_id) {
+                    console.log('Wrong user')
+                    socket.disconnect()
+                } else {
+                    console.log('Authorization successful')
+                }
+            }
         })
+        // axios.post(AUTH_URL+'/auth', token)
+        // .then(res => console.log(res.data))
+        // .catch(err => {
+        //     console.log('Authentication error')
+        //     socket.disconnect()
+        // })
     })
     socket.on('disconnect', () => {
         console.log('user disconnected')
