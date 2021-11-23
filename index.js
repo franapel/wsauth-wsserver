@@ -1,6 +1,6 @@
 const PORT = process.env.PORT || 80
 const ORIGIN = process.env.CLIENT_URL || 'http://localhost:3000'
-const AUTH_URL = process.env.AUTH_URL || 'http://localhost:5000/auth'
+const AUTH_URL = process.env.AUTH_URL || 'http://localhost:5000'
 
 const express = require('express')
 const cors = require('cors')
@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     console.log('a user connected')
     socket.on('authenticate', (token) => {
-        axios.post(AUTH_URL, token)
+        axios.post(AUTH_URL+'/auth', token)
         .then(res => console.log(res.data))
         .catch(err => {
             console.log('Authentication error')
