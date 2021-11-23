@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
         .then(res => console.log(res.data))
         .catch(err => {
             console.log('Authentication error')
+            console.log(err)
             socket.disconnect()
         })
     })
