@@ -32,15 +32,11 @@ io.on('connection', (socket) => {
                     socket.disconnect()
                 } else {
                     console.log('Authorization successful')
+                    socket.data.user_id = creds.user_id //**********!Agregado!**********
+                    console.log(socket.data)
                 }
             }
         })
-        // axios.post(AUTH_URL+'/auth', token)
-        // .then(res => console.log(res.data))
-        // .catch(err => {
-        //     console.log('Authentication error')
-        //     socket.disconnect()
-        // })
     })
     socket.on('disconnect', () => {
         console.log('user disconnected')
@@ -49,7 +45,8 @@ io.on('connection', (socket) => {
         console.log('message: ' + msg.content);
         socket.emit('msg-response', {
             sender: 'server',
-            content: 'Respuesta del servidor al mensaje: ' + msg.content
+            content: 'Respuesta del servidor al mensaje: ' + msg.content + 
+                '  (Usuario: ' + socket.data.user_id + ')' //**********!Agregado!**********
         })
     })
 })
